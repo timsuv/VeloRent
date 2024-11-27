@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Spectre.Console;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security;
@@ -26,10 +27,10 @@ namespace VeloRent.Functions
                 Console.WriteLine("Enter an username: ");
                 string username = Console.ReadLine();
 
-                // Check if username already exists
                 if (db.Customers.Any(u => u.Username == username))
                 {
-                    Console.WriteLine("Username already exists. Please choose another username or proce.");
+                    Console.WriteLine("Username already exists.");
+                    Register();
                     return;
                 }
                 Console.WriteLine("\nEnter a password: ");
@@ -68,45 +69,59 @@ namespace VeloRent.Functions
         {
             using (var db = new VehicleRentalDbContext())
             {
-                
-                Console.WriteLine("\nEnter your username:");
-                string username = Console.ReadLine();
-                Console.WriteLine("\nEnter your password:");
-                string password = MaskInput();
-                var tempUser = db.Customers.FirstOrDefault(u => u.Username.ToLower() == username.ToLower());
-                if (tempUser == null)
+                while (true)
                 {
-                    Console.WriteLine("Login failed: Username not found. \nDo you want to try again \nOr do you want to sign up? \n(Write yes/no)");
-                    string answer = Console.ReadLine();
-                    if (answer.ToLower() == "yes")
-                    {
-                        Login();
-                    }
-                    else if (answer.ToLower() == "no")
-                    {
-                        Register();
-                    }
-                    return null;
-                }
+                    Console.WriteLine("\nEnter your username:");
+                    string username = Console.ReadLine();
+                    Console.WriteLine("\nEnter your password:");
+                    string password = MaskInput();
 
-                // Verify the password
-                if (PasswordHelper.VerifyPassword(password, tempUser.PasswordHash))
-                {
-                    Console.Clear();
-                    Console.WriteLine($"{HelloMessage()} {tempUser.FirstName} {tempUser.LastName}!");
-                    return tempUser;
-                }
-                else
-                {
-                    Console.WriteLine("Login failed: Incorrect password.");
-                    return null;
+                    // Attempt to find the user in the database
+                    var tempUser = db.Customers
+                        .FirstOrDefault(u => u.Username.ToLower() == username.ToLower());
+
+                    if (tempUser == null)
+                    {
+                        // Username not found
+                        Console.WriteLine("\nLogin failed: Username not found.");
+                        var choice = AnsiConsole.Prompt(
+                            new SelectionPrompt<string>()
+                                .Title("[green]Would you like to try logging in again[/] or [blue]sign up?[/]")
+                                .AddChoices("Try Again", "Sign Up"));
+
+                        if (choice == "Sign Up")
+                        {
+                            Console.Clear();
+                            Register();
+                            // After registration, redirect back to login
+                            Console.WriteLine("\nPlease log in with your new credentials.");
+                            continue; // Restart login
+                        }
+                        else
+                        {
+                            Console.Clear();
+                            continue; // Retry login
+                        }
+                    }
+
+                    // Verify the password
+                    if (PasswordHelper.VerifyPassword(password, tempUser.PasswordHash))
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"{HelloMessage()} {tempUser.FirstName} {tempUser.LastName}!");
+                        return tempUser; // Successful login
+                    }
+                    else
+                    {
+                        Console.WriteLine("Login failed: Incorrect password.");
+                    }
                 }
             }
         }
 
         public string HelloMessage()
         {
-            
+
             if (DateTime.Now.Hour < 12)
             {
                 return "Good morning";
