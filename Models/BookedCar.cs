@@ -3,23 +3,19 @@ using System.Collections.Generic;
 
 namespace VeloRent.Models;
 
-public partial class Rental
+public partial class BookedCar
 {
     public int Id { get; set; }
 
     public int CarId { get; set; }
 
-    public int CustomerId { get; set; }
-
     public DateOnly StartDate { get; set; }
 
     public DateOnly EndDate { get; set; }
 
-    public decimal TotalCost { get; set; }
-
-    public virtual ICollection<BookedCar> BookedCars { get; set; } = new List<BookedCar>();
+    public int RentalId { get; set; }
 
     public virtual Car Car { get; set; } = null!;
 
-    public virtual Customer Customer { get; set; } = null!;
+    public virtual Rental Rental { get; set; } = null!;
 }

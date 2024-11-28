@@ -1,4 +1,5 @@
 ﻿using VeloRent.Functions;
+using VeloRent.Models;
 
 namespace VeloRent
 {
@@ -6,9 +7,11 @@ namespace VeloRent
     {
         static void Main(string[] args)
         {
+            
             Menu menu = new Menu();
             menu.MenuChoice();
 
         }
+
     }
 }

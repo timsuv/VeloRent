@@ -22,7 +22,7 @@ namespace VeloRent.Functions
 
 
 
-            using (var db = new VehicleRentalDbContext())
+            using (var db = new VeloRentContext())
             {
                 Console.WriteLine("Enter an username: ");
                 string username = Console.ReadLine();
@@ -67,7 +67,7 @@ namespace VeloRent.Functions
 
         public Customer Login()
         {
-            using (var db = new VehicleRentalDbContext())
+            using (var db = new VeloRentContext())
             {
                 while (true)
                 {

@@ -19,6 +19,10 @@ public partial class Car
 
     public string? MaintenanceStatus { get; set; }
 
+    public bool IsAvailable { get; set; }
+
+    public virtual ICollection<BookedCar> BookedCars { get; set; } = new List<BookedCar>();
+
     public virtual CarType CarType { get; set; } = null!;
 
     public virtual CarRentalLocation Location { get; set; } = null!;
