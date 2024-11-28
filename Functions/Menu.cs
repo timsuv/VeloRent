@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VeloRent.Models;
 
 namespace VeloRent.Functions
 {
@@ -50,6 +51,11 @@ namespace VeloRent.Functions
                     switch (choice)
                     {
                         case 1:
+                            CarRentalLocation carRentalLocation = new CarRentalLocation();
+                            Rental rental = new Rental();
+                             carRentalLocation.ChooseLocation(loggedInUser);
+                           
+
                             break;
                         case 2:
                             break;
@@ -74,7 +80,7 @@ namespace VeloRent.Functions
             }
             else
             {
-                Console.WriteLine("Inloggning misslyckades");
+                Console.WriteLine("Login failed");
             }
         }
 
