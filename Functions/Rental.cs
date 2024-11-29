@@ -13,11 +13,12 @@ namespace VeloRent.Models
     {
         public void RentCar(dynamic chosenCar, Customer loggedInUser, DateOnly startDate, DateOnly endDate)
         {
-            // Proceed to rent the car
             int timeDiff = endDate.DayNumber - startDate.DayNumber;
             decimal totalCost = chosenCar.DailyRate * timeDiff;
             Console.WriteLine($"You selected: {chosenCar.Make} {chosenCar.Model} ({chosenCar.Type})");
             Console.WriteLine($"Total rental cost: {totalCost:C}");
+
+           
 
             var choice = AnsiConsole.Prompt(
                                     new SelectionPrompt<string>()

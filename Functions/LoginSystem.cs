@@ -1,4 +1,5 @@
-﻿using Spectre.Console;
+﻿using Microsoft.EntityFrameworkCore;
+using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,18 +21,22 @@ namespace VeloRent.Functions
 
             Console.WriteLine("Please fill the questions to sign up to our services!\n");
 
-
-
             using (var db = new VeloRentContext())
             {
-                Console.WriteLine("Enter an username: ");
-                string username = Console.ReadLine();
-
-                if (db.Customers.Any(u => u.Username == username))
+                string username = String.Empty;
+                while (true)
                 {
-                    Console.WriteLine("Username already exists.");
-                    Register();
-                    return;
+                    Console.WriteLine("Enter an username: ");
+                    username = Console.ReadLine();
+
+                    if (db.Customers.Any(u => u.Username == username))
+                    {
+                        Console.WriteLine("Username already exists. Please try again");
+
+                        continue;
+                    }
+                    break;
+
                 }
                 Console.WriteLine("\nEnter a password: ");
                 string password = MaskInput();
@@ -65,7 +70,7 @@ namespace VeloRent.Functions
 
         }
 
-        public Customer Login()
+        public async Task<Customer> LoginAsync()
         {
             using (var db = new VeloRentContext())
             {
@@ -76,9 +81,24 @@ namespace VeloRent.Functions
                     Console.WriteLine("\nEnter your password:");
                     string password = MaskInput();
 
+                    // Start progress bar
+                    var progressTask = AnsiConsole.Progress()
+                        .StartAsync(async ctx =>
+                        {
+                            var task = ctx.AddTask("[green]Logging in...[/]");
+                            while (!ctx.IsFinished)
+                            {
+                                await Task.Delay(150);
+                                task.Increment(10);
+                            }
+                        });
+
                     // Attempt to find the user in the database
-                    var tempUser = db.Customers
-                        .FirstOrDefault(u => u.Username.ToLower() == username.ToLower());
+                    var tempUser = await db.Customers
+                        .FirstOrDefaultAsync(u => u.Username.ToLower() == username.ToLower());
+                    await progressTask;
+
+                    // Stop progress bar
 
                     if (tempUser == null)
                     {
@@ -108,7 +128,6 @@ namespace VeloRent.Functions
                     if (PasswordHelper.VerifyPassword(password, tempUser.PasswordHash))
                     {
                         Console.Clear();
-                        Console.WriteLine($"{HelloMessage()} {tempUser.FirstName} {tempUser.LastName}!");
                         return tempUser; // Successful login
                     }
                     else
@@ -118,8 +137,75 @@ namespace VeloRent.Functions
                 }
             }
         }
+//            using (var db = new VeloRentContext())
+//            {
+//                while (true)
+//                {
+//                    Console.WriteLine("\nEnter your username:");
+//                    string username = Console.ReadLine();
+//                    Console.WriteLine("\nEnter your password:");
+//                    string password = MaskInput();
 
-        public string HelloMessage()
+//                    // Attempt to find the user in the database
+//                    var tempUser = db.Customers
+//                        .FirstOrDefault(u => u.Username.ToLower() == username.ToLower());
+
+//                    if (tempUser == null)
+//                    {
+//                        // Username not found
+//                        Console.WriteLine("\nLogin failed: Username not found.");
+//                        var choice = AnsiConsole.Prompt(
+//                            new SelectionPrompt<string>()
+//                                .Title("[green]Would you like to try logging in again[/] or [blue]sign up?[/]")
+//                                .AddChoices("Try Again", "Sign Up"));
+
+//                        if (choice == "Sign Up")
+//                        {
+//                            Console.Clear();
+//                            Register();
+//                            // After registration, redirect back to login
+//                            Console.WriteLine("\nPlease log in with your new credentials.");
+//                            continue; // Restart login
+//                        }
+//                        else
+//                        {
+//                            Console.Clear();
+//                            continue; // Retry login
+//                        }
+//                    }
+
+//                    // Verify the password
+//                    if (PasswordHelper.VerifyPassword(password, tempUser.PasswordHash))
+//                    {
+//                        AnsiConsole.Progress()
+//                         .Start(ctx =>
+//{
+
+//    var task1 = ctx.AddTask("[green]Loggin in...[/]");
+
+
+//    while (!ctx.IsFinished)
+//    {
+//        task1.Increment(10);
+//        Task.Delay(150).Wait();
+
+//    }
+//});
+
+
+//                        Console.Clear();
+//                        //Console.WriteLine($"{HelloMessage()} {tempUser.FirstName} {tempUser.LastName}!");
+//                        return tempUser; // Successful login
+//                    }
+//                    else
+//                    {
+//                        Console.WriteLine("Login failed: Incorrect password.");
+//                    }
+//                }
+//            }
+        
+
+        public string HelloMessage( )
         {
 
             if (DateTime.Now.Hour < 12)
@@ -156,5 +242,32 @@ namespace VeloRent.Functions
             return new System.Net.NetworkCredential(string.Empty, password).Password;
 
         }
+
+        public async Task LogOut()
+        {
+            Console.WriteLine("Logging you out...\n");
+            Console.WriteLine("Thank you for using VeloRent!\nSee you soon!");
+
+            await AnsiConsole.Progress()
+                .StartAsync(async ctx =>
+                {
+                    // Define a single progress task for logout
+                    var task = ctx.AddTask("[green]Processing logout...[/]");
+
+                    while (!ctx.IsFinished)
+                    {
+                        // Simulate work with progress increments
+                        await Task.Delay(450); // Adjust the delay for smoother progress
+                        task.Increment(10); // Increment progress by 10% each cycle
+                    }
+                });
+
+            Console.WriteLine("Thank you for using VeloRent!\nSee you soon!");
+            Console.Clear();
+
+
+          
+        }
+
     }
 }

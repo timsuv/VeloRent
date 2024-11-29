@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Spectre.Console;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,71 +14,63 @@ namespace VeloRent.Functions
         {
         }
 
-        public void MenuChoice()
+      
+        public async Task MenuSpectre()
         {
-            Console.WriteLine("Welcome to VeloRent!");
+           
 
             LoginSystem loginSystem = new LoginSystem();
-            var loggedInUser = loginSystem.Login();
 
-            if (loggedInUser != null)
+            while (true) 
             {
-                Console.WriteLine("Choose between different options:");
-                Console.WriteLine("1. Rent a car");
-                Console.WriteLine("2. Check my rent");
-                Console.WriteLine("3. Change Date");
+                Console.WriteLine("Welcome to VeloRent!");
+                var loggedInUser = await loginSystem.LoginAsync();
+                Console.WriteLine($"{loginSystem.HelloMessage()} {loggedInUser.FirstName} {loggedInUser.LastName}!");
 
-                while (true)
+                if (loggedInUser != null) 
                 {
-                    Console.WriteLine("Tryck 0 för att avsluta programmeter:");
-
-                    var input = int.TryParse(Console.ReadLine(), out var choice);
-                    if (!input)
+                    
+                    while (true) 
                     {
-                        Console.WriteLine("Invalid input. Please enter a number.");
-                        continue;
-                    }
+                        var menu = AnsiConsole.Prompt(
+                            new SelectionPrompt<string>()
+                                .Title("[green]Choose between different options:[/]")
+                                .AddChoices("Rent a car", "Manage booking", "Log out", "Exit the program"));
 
-                    if (choice == 0)
-                    {
-                        Console.WriteLine("Porgramet avslutas...");
-                        break;
-                    }
-
-                    BookedCar bookedCar = new BookedCar();
-
-                    switch (choice)
-                    {
-                        case 1:
+                        if (menu == "Rent a car")
+                        {
                             CarRentalLocation carRentalLocation = new CarRentalLocation();
-                            Rental rental = new Rental();
+                            Console.Clear();
                             carRentalLocation.ChooseLocation(loggedInUser);
-                            break;
-                        case 2:
+                        }
+                        else if (menu == "Manage booking")
+                        {
+                            Console.Clear();
+                            BookedCar bookedCar = new BookedCar();
                             bookedCar.BookedCarMenu(loggedInUser);
+                        }
+                        else if (menu == "Log out")
+                        {
+                            Console.Clear();
+                            await loginSystem.LogOut(); 
                             break;
-                        case 3:
-
-                            break;
-                        case 4:
-                            break;
-                        case 5:
-                            break;
-                        case 6:
-                            break;
-                        case 7:
-                            break;
-                        default:
-                            Console.WriteLine("Invalid choice");
-                            break;
+                        }
+                        else if (menu == "Exit the program" )
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Goodbye!");
+                            Environment.Exit(0);
+                        }
                     }
                 }
-            }
-            else
-            {
-                Console.WriteLine("Login failed");
+                else
+                {
+                    Console.WriteLine("Login failed");
+                    break; 
+                }
             }
         }
+
     }
 }
 

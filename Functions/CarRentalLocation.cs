@@ -14,7 +14,6 @@ namespace VeloRent.Functions
         Rental rental = new Rental();
         public void ChooseLocation(Customer loggedInUser)
         {
-            //Console.WriteLine("\nChoose the location:");
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("[green]Choose the location:[/]")
@@ -100,7 +99,6 @@ namespace VeloRent.Functions
                     return;
                 }
 
-                // Display available cars
                 var selectedCar = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
                         .Title("[green]Select a car to rent:[/]")
@@ -109,7 +107,6 @@ namespace VeloRent.Functions
                         )
                 );
 
-                // Find the selected car
                 var chosenCar = availableCars.FirstOrDefault(car =>
                     $"{car.Make} {car.Model} ({car.Type}) - {car.DailyRate:C}/day, {car.FuelType}, {car.Transmission}, Seats: {car.NumberOfSeats}" == selectedCar);
 
@@ -119,7 +116,6 @@ namespace VeloRent.Functions
                     return;
                 }
 
-                // Rent the chosen car
                 rental.RentCar(chosenCar, loggedInUser, startDate, endDate);
             }
         }
