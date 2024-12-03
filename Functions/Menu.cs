@@ -35,7 +35,7 @@ namespace VeloRent.Functions
                         var menu = AnsiConsole.Prompt(
                             new SelectionPrompt<string>()
                                 .Title("[green]Choose between different options:[/]")
-                                .AddChoices("Rent a car", "Manage booking", "Log out", "Exit the program"));
+                                .AddChoices("Rent a car", "Manage booking", "Manage profile", "Log out", "Exit the program"));
 
                         if (menu == "Rent a car")
                         {
@@ -48,6 +48,12 @@ namespace VeloRent.Functions
                             Console.Clear();
                             BookedCar bookedCar = new BookedCar();
                             bookedCar.BookedCarMenu(loggedInUser);
+                        }
+                        else if (menu == "Manage profile")
+                        {
+                            Console.Clear();
+                            ManageCustomer manageCustomer = new ManageCustomer();
+                            manageCustomer.ChangeUsername(loggedInUser);
                         }
                         else if (menu == "Log out")
                         {
