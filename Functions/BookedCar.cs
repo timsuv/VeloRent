@@ -20,65 +20,75 @@ namespace VeloRent.Functions
                 var bookings = context.BookedCars
                     .Where(b => b.Rental.CustomerId == loggedInUser.Id)
                     .Include(b => b.Car)
+                    .ThenInclude(car => car.Location)
+                    .Include(b => b.Car)
                     .ThenInclude(b => b.CarType)
-                    .Include(b => b.Rental)
                     .ToList();
-
-                Console.WriteLine("Your bookings:");
-
-                bool upcomingHeaderPrinted = false;
-                bool pastHeaderPrinted = false;
-                bool currentHeaderPrinted = false;
-                DateOnly today = DateOnly.FromDateTime(DateTime.Now); 
-
-                foreach (var booking in bookings)
+                if (bookings.Count > 0)
                 {
-                    if (booking.Car != null && booking.Car.CarType != null)
-                    {
-                        if (booking.StartDate > today)
-                        {
-                            if (!upcomingHeaderPrinted)
-                            {
-                                Console.WriteLine("Upcoming bookings:");
-                                Console.WriteLine("--------------------------------");
-                                upcomingHeaderPrinted = true;
-                            }
-                            Console.WriteLine($"Car: {booking.Car.CarType.Make} {booking.Car.CarType.Model}, Start Date: {booking.StartDate},End Date: {booking.EndDate},  Place: {booking.Car.Location}");
-                        }
-                        else if (booking.StartDate <= today && booking.EndDate >= today)
-                        {
-                            if (!currentHeaderPrinted)
-                            {
-                                Console.WriteLine("Current bookings:");
-                                Console.WriteLine("--------------------------------");
+                    Console.WriteLine("Here is the history of all your bookings\n:");
 
-                                currentHeaderPrinted = true;
-                            }
-                            Console.WriteLine($"Car: {booking.Car.CarType.Make} {booking.Car.CarType.Model}, Start Date: {booking.StartDate}, End Date: {booking.EndDate} Place: {booking.Car.Location}");
-                        }
-                        else if (booking.EndDate < today)
-                        {
-                            if (!pastHeaderPrinted)
-                            {
-                                Console.WriteLine("Past bookings:");
-                                Console.WriteLine("--------------------------------");
+                    bool upcomingHeaderPrinted = false;
+                    bool pastHeaderPrinted = false;
+                    bool currentHeaderPrinted = false;
+                    DateOnly today = DateOnly.FromDateTime(DateTime.Now);
 
-                                pastHeaderPrinted = true;
-                            }
-                            Console.WriteLine($"Car: {booking.Car.CarType.Make} {booking.Car.CarType.Model}, Start Date: {booking.StartDate}, End Date: {booking.EndDate} Place: {booking.Car.Location}");
-                        }
-                    }
-                    else
+                    foreach (var booking in bookings)
                     {
-                        Console.WriteLine("Car information not available.");
+                        if (booking.Car != null && booking.Car.CarType != null)
+                        {
+                            if (booking.StartDate > today)
+                            {
+                                if (!upcomingHeaderPrinted)
+                                {
+                                    Console.WriteLine("\nUpcoming bookings");
+                                    Console.WriteLine("--------------------------------");
+                                    upcomingHeaderPrinted = true;
+                                }
+                                Console.WriteLine($"Car: {booking.Car.CarType.Make} {booking.Car.CarType.Model}, Start Date: {booking.StartDate},End Date: {booking.EndDate},  Place: {booking.Car.Location.Name}, {booking.Car.Location.Address} ");
+                            }
+                            else if (booking.StartDate <= today && booking.EndDate >= today)
+                            {
+                                if (!currentHeaderPrinted)
+                                {
+                                    Console.WriteLine("\nCurrent bookings:");
+                                    Console.WriteLine("--------------------------------");
+
+                                    currentHeaderPrinted = true;
+                                }
+                                Console.WriteLine($"Car: {booking.Car.CarType.Make} {booking.Car.CarType.Model}, Start Date: {booking.StartDate}, End Date: {booking.EndDate} Place: {booking.Car.Location.Name}, {booking.Car.Location.Address} ");
+                            }
+                            else if (booking.EndDate < today)
+                            {
+                                if (!pastHeaderPrinted)
+                                {
+                                    Console.WriteLine("\nPast bookings:");
+                                    Console.WriteLine("--------------------------------");
+
+                                    pastHeaderPrinted = true;
+                                }
+                                Console.WriteLine($"Car: {booking.Car.CarType.Make} {booking.Car.CarType.Model}, Start Date: {booking.StartDate}, End Date: {booking.EndDate} Place: {booking.Car.Location.Name}, {booking.Car.Location.Address} ");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("Car information not available.");
+                        }
                     }
                 }
+                else
+                {
+                    Console.WriteLine("You have no bookings.");
+                    return;
+                }
 
-
-                
             }
+
+
+
+
         }
-    
+
         public void CancelBooking(Customer loggedInUser)
         {
             using (var context = new VeloRentContext())
@@ -135,6 +145,8 @@ namespace VeloRent.Functions
                 var bookings = context.BookedCars
                     .Where(b => b.Rental.CustomerId == loggedInUser.Id)
                     .Include(b => b.Car)
+                    .ThenInclude(b=> b.Location)
+                    .Include(b => b.Car)
                     .ThenInclude(c => c.CarType)
                     .Include(b => b.Rental)
                     .ToList();
@@ -149,7 +161,7 @@ namespace VeloRent.Functions
 
                 var bookingChoices = bookings.Select(booking => new
                 {
-                    DisplayText = $"{booking.Car.CarType.Make} {booking.Car.CarType.Model}\n Start Date {booking.StartDate} \nEnd Date {booking.EndDate}\nPlace: {booking.Car.Location}",
+                    DisplayText = $"{booking.Car.CarType.Make} {booking.Car.CarType.Model}\n Start Date {booking.StartDate} \nEnd Date {booking.EndDate}\nPlace: {booking.Car.Location.Name}\n",
                     Booking = booking
                 }).ToList();
 
@@ -213,7 +225,7 @@ namespace VeloRent.Functions
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("[green]What would you like to do?[/]")
-                    .AddChoices("Check bookings", "Cancel booking", "Change booking date")
+                    .AddChoices("Check bookings", "Cancel booking", "Change booking date", "Exit to main menu")
             );
             switch (choice)
             {
@@ -226,6 +238,8 @@ namespace VeloRent.Functions
                 case "Change booking date":
                     ChangeDate(loggedInUser);
                     break;
+                case "Exit to main menu":
+                    return;
             }
         }
     }

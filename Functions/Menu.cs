@@ -13,24 +13,45 @@ namespace VeloRent.Functions
         public Menu()
         {
         }
-
-      
+        string logo = @"
+____    ____  _______  __        ______      .______       _______ .__   __. .___________.
+\   \  /   / |   ____||  |      /  __  \     |   _  \     |   ____||  \ |  | |           |
+ \   \/   /  |  |__   |  |     |  |  |  |    |  |_)  |    |  |__   |   \|  | `---|  |----`
+  \      /   |   __|  |  |     |  |  |  |    |      /     |   __|  |  . `  |     |  |     
+   \    /    |  |____ |  `----.|  `--'  |    |  |\  \----.|  |____ |  |\   |     |  |     
+    \__/     |_______||_______| \______/     | _| `._____||_______||__| \__|     |__|     
+                                                                                          
+";
         public async Task MenuSpectre()
         {
-           
-
             LoginSystem loginSystem = new LoginSystem();
 
-            while (true) 
+            while (true)
             {
-                Console.WriteLine("Welcome to VeloRent!");
-                var loggedInUser = await loginSystem.LoginAsync();
-                Console.WriteLine($"{loginSystem.HelloMessage()} {loggedInUser.FirstName} {loggedInUser.LastName}!");
+                        AnsiConsole.Write(
+                         new Markup($"[green]{logo}[/]")
+                             .Centered());
 
-                if (loggedInUser != null) 
+
+                AnsiConsole.Write(
+                         new Markup($"[green]{"Welcome to VeloRent!"}[/]")
+                             .Centered());
+               
+
+                var loggedInUser = await loginSystem.LoginAsync();
+                string welcomeMessage = ($"{loginSystem.HelloMessage()} {loggedInUser.FirstName} {loggedInUser.LastName}!");
+
+                var panel1 = new Panel(new Text(welcomeMessage)
+                   .Centered())
+                   .Expand()
+                   .BorderStyle(Style.Parse("green"));
+
+                AnsiConsole.Write(panel1);
+
+
+                if (loggedInUser != null)
                 {
-                    
-                    while (true) 
+                    while (true)
                     {
                         var menu = AnsiConsole.Prompt(
                             new SelectionPrompt<string>()
@@ -53,15 +74,15 @@ namespace VeloRent.Functions
                         {
                             Console.Clear();
                             ManageCustomer manageCustomer = new ManageCustomer();
-                            manageCustomer.ChangeUsername(loggedInUser);
+                            manageCustomer.ManageBookingMenu(loggedInUser);
                         }
                         else if (menu == "Log out")
                         {
                             Console.Clear();
-                            await loginSystem.LogOut(); 
+                            await loginSystem.LogOut();
                             break;
                         }
-                        else if (menu == "Exit the program" )
+                        else if (menu == "Exit the program")
                         {
                             Console.Clear();
                             Console.WriteLine("Goodbye!");
@@ -72,12 +93,12 @@ namespace VeloRent.Functions
                 else
                 {
                     Console.WriteLine("Login failed");
-                    break; 
+                    break;
                 }
-            }
-        }
 
+            }
+
+        }
     }
 }
 
-    

@@ -17,7 +17,7 @@ namespace VeloRent.Functions
             var choice = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
                     .Title("[green]Choose the location:[/]")
-                    .AddChoices("Stockholm City, Kungsgatan 20", "Nacka Strand, Granitvägen 12", "Stockholm Vasastan, Odengatan 20"));
+                    .AddChoices("Stockholm City, Kungsgatan 20", "Nacka Strand, Granitvägen 12", "Stockholm Vasastan, Odengatan 20", "Exit to the main menu"));
 
             string locationName = string.Empty;
             string locationAddress = string.Empty;
@@ -32,18 +32,37 @@ namespace VeloRent.Functions
                 locationName = "Nacka Strand";
                 locationAddress = "Granitvägen 12";
             }
-            else
+            else if (choice == "Stockholm Vasastan, Odengatan 20")
             {
                 locationName = "Stockholm Vasastan";
                 locationAddress = "Odengatan 20";
+            }
+            else
+            {
+                return;
             }
 
             DateOnly startDate = GetRentalStartDate();
             DateOnly endDate = GetRentalEndDate(startDate);
 
-            DisplayAvailableCars(locationName, locationAddress, startDate, endDate, loggedInUser);
-        }
+            using (var context = new VeloRentContext())
+            {
+                var bookedCars = context.BookedCars
+                    .Where(bc => bc.StartDate <= endDate && bc.EndDate >= startDate)
+                    .Select(bc => bc.CarId)
+                    .ToList();
+                if (!bookedCars.Any())
+                {
+                    DisplayAvailableCars(locationName, locationAddress, startDate, endDate, loggedInUser);
+                    return;
+                }
+                else
+                {
+                    Console.WriteLine("You already have a booking during those dates\nYou can't have multiple bookings!\nYou can try to cancel or change dates");
+                }
 
+            }
+        }
         public DateOnly GetRentalStartDate()
         {
             Console.WriteLine("Choose the start date for your rental (yyyy-MM-dd): ");
@@ -52,6 +71,8 @@ namespace VeloRent.Functions
             {
                 Console.WriteLine("Invalid date. Please choose a date in the future.");
             }
+            
+
             return startDate;
         }
 

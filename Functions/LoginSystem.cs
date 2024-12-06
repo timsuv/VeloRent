@@ -15,7 +15,7 @@ namespace VeloRent.Functions
         public LoginSystem()
         {
         }
-
+       
         public void Register()
         {
 
@@ -39,13 +39,14 @@ namespace VeloRent.Functions
 
                 }
                 Console.WriteLine("\nEnter a password: ");
-                string password = MaskInput();
+                string password = MaskInput().Trim();
+                
                 Console.WriteLine("\nEnter your first name: ");
-                string firstName = Console.ReadLine();
+                string firstName = Console.ReadLine().Trim();
                 Console.WriteLine("\nEnter your last name: ");
-                string lastName = Console.ReadLine();
+                string lastName = Console.ReadLine().Trim();
                 Console.WriteLine("\nEnter your email: ");
-                string email = Console.ReadLine();
+                string email = Console.ReadLine().Trim();
                 Console.WriteLine("\nEnter your phone number: ");
                 string phoneNumber = Console.ReadLine();
                 Console.WriteLine("\nEnter your license number");
@@ -76,10 +77,10 @@ namespace VeloRent.Functions
             {
                 while (true)
                 {
-                    Console.WriteLine("\nEnter your username:");
-                    string username = Console.ReadLine();
+                    Console.WriteLine("Enter your username:");
+                    string username = Console.ReadLine().Trim();
                     Console.WriteLine("\nEnter your password:");
-                    string password = MaskInput();
+                    string password = MaskInput().Trim();
 
                     // Start progress bar
                     var progressTask = AnsiConsole.Progress()
@@ -137,72 +138,7 @@ namespace VeloRent.Functions
                 }
             }
         }
-//            using (var db = new VeloRentContext())
-//            {
-//                while (true)
-//                {
-//                    Console.WriteLine("\nEnter your username:");
-//                    string username = Console.ReadLine();
-//                    Console.WriteLine("\nEnter your password:");
-//                    string password = MaskInput();
-
-//                    // Attempt to find the user in the database
-//                    var tempUser = db.Customers
-//                        .FirstOrDefault(u => u.Username.ToLower() == username.ToLower());
-
-//                    if (tempUser == null)
-//                    {
-//                        // Username not found
-//                        Console.WriteLine("\nLogin failed: Username not found.");
-//                        var choice = AnsiConsole.Prompt(
-//                            new SelectionPrompt<string>()
-//                                .Title("[green]Would you like to try logging in again[/] or [blue]sign up?[/]")
-//                                .AddChoices("Try Again", "Sign Up"));
-
-//                        if (choice == "Sign Up")
-//                        {
-//                            Console.Clear();
-//                            Register();
-//                            // After registration, redirect back to login
-//                            Console.WriteLine("\nPlease log in with your new credentials.");
-//                            continue; // Restart login
-//                        }
-//                        else
-//                        {
-//                            Console.Clear();
-//                            continue; // Retry login
-//                        }
-//                    }
-
-//                    // Verify the password
-//                    if (PasswordHelper.VerifyPassword(password, tempUser.PasswordHash))
-//                    {
-//                        AnsiConsole.Progress()
-//                         .Start(ctx =>
-//{
-
-//    var task1 = ctx.AddTask("[green]Loggin in...[/]");
-
-
-//    while (!ctx.IsFinished)
-//    {
-//        task1.Increment(10);
-//        Task.Delay(150).Wait();
-
-//    }
-//});
-
-
-//                        Console.Clear();
-//                        //Console.WriteLine($"{HelloMessage()} {tempUser.FirstName} {tempUser.LastName}!");
-//                        return tempUser; // Successful login
-//                    }
-//                    else
-//                    {
-//                        Console.WriteLine("Login failed: Incorrect password.");
-//                    }
-//                }
-//            }
+//           
         
 
         public string HelloMessage( )
@@ -221,7 +157,7 @@ namespace VeloRent.Functions
                 return "Good evening";
             }
         }
-        static string MaskInput()
+        public string MaskInput()
         {
             SecureString password = new SecureString();
             ConsoleKeyInfo key;

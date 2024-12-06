@@ -18,7 +18,7 @@ namespace VeloRent.Models
             Console.WriteLine($"You selected: {chosenCar.Make} {chosenCar.Model} ({chosenCar.Type})");
             Console.WriteLine($"Total rental cost: {totalCost:C}");
 
-           
+
 
             var choice = AnsiConsole.Prompt(
                                     new SelectionPrompt<string>()
@@ -59,7 +59,5 @@ namespace VeloRent.Models
                 Console.WriteLine("Rental didn't go through");
             }
         }
-
-
     }
 }
