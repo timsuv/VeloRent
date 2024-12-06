@@ -26,7 +26,7 @@ namespace VeloRent.Functions
                     .ToList();
                 if (bookings.Count > 0)
                 {
-                    Console.WriteLine("Here is the history of all your bookings\n:");
+                    Console.WriteLine("Here is the history of all your bookings:\n");
 
                     bool upcomingHeaderPrinted = false;
                     bool pastHeaderPrinted = false;
@@ -41,7 +41,7 @@ namespace VeloRent.Functions
                             {
                                 if (!upcomingHeaderPrinted)
                                 {
-                                    Console.WriteLine("\nUpcoming bookings");
+                                    Console.WriteLine("\nUpcoming bookings:");
                                     Console.WriteLine("--------------------------------");
                                     upcomingHeaderPrinted = true;
                                 }

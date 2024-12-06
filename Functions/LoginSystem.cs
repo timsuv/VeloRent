@@ -15,7 +15,7 @@ namespace VeloRent.Functions
         public LoginSystem()
         {
         }
-       
+
         public void Register()
         {
 
@@ -38,9 +38,25 @@ namespace VeloRent.Functions
                     break;
 
                 }
-                Console.WriteLine("\nEnter a password: ");
-                string password = MaskInput().Trim();
-                
+                string password = String.Empty;
+                while (true)
+                {
+                    Console.WriteLine("\nEnter a password: ");
+                    password = MaskInput().Trim();
+                    if (!IsPasswordValid(password))
+                    {
+                        Console.WriteLine("Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.");
+                        continue;
+                    }
+                    else
+                    {
+                        break;
+
+                    }
+                }
+
+
+
                 Console.WriteLine("\nEnter your first name: ");
                 string firstName = Console.ReadLine().Trim();
                 Console.WriteLine("\nEnter your last name: ");
@@ -138,10 +154,10 @@ namespace VeloRent.Functions
                 }
             }
         }
-//           
-        
+        //           
 
-        public string HelloMessage( )
+
+        private static string HelloMessage()
         {
 
             if (DateTime.Now.Hour < 12)
@@ -157,7 +173,7 @@ namespace VeloRent.Functions
                 return "Good evening";
             }
         }
-        public string MaskInput()
+        private static string MaskInput()
         {
             SecureString password = new SecureString();
             ConsoleKeyInfo key;
@@ -202,7 +218,16 @@ namespace VeloRent.Functions
             Console.Clear();
 
 
-          
+
+        }
+        private static bool IsPasswordValid(string password)
+        {
+            bool result = password.Length >= 8 &&
+                          password.Any(char.IsLower) &&
+                          password.Any(char.IsUpper) &&
+                          password.Any(char.IsDigit) &&
+                         password.Any(ch => !char.IsLetterOrDigit(ch));
+            return result;
         }
 
     }
